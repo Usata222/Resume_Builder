@@ -1,0 +1,35 @@
+{% extends "myapp/base.html" %}
+{% block title %}My Resumes{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-5xl px-4 sm:px-6 py-10">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">My Resumes</h1>
+    <a href="{% url 'builder' %}" class="rounded-2xl bg-slate-900 text-white px-4 py-2 text-sm font-bold hover:bg-slate-800 whitespace-nowrap">+ New Resume</a>
+  </div>
+
+  {% if resumes %}
+  <div class="grid gap-4 sm:grid-cols-2">
+    {% for resume in resumes %}
+    <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="font-bold text-slate-900">{{ resume.title }}</h2>
+      <p class="text-sm text-slate-500 mt-1">{{ resume.full_name }}</p>
+      <p class="text-xs text-slate-400 mt-1">Updated {{ resume.updated_at|date:"M j, Y g:i A" }}</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <a href="{% url 'builder_edit' resume.id %}" class="text-sm font-semibold rounded-xl bg-slate-100 px-3 py-1.5 text-slate-700 hover:bg-slate-200">Edit</a>
+        <a href="{% url 'download_resume' resume.id %}" class="text-sm font-semibold rounded-xl bg-indigo-600 text-white px-3 py-1.5 hover:bg-indigo-700">Download PDF</a>
+        <form method="POST" action="{% url 'delete_resume' resume.id %}" onsubmit="return confirm('Delete this resume?');" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="text-sm font-semibold rounded-xl bg-red-50 text-red-600 px-3 py-1.5 hover:bg-red-100">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+    <p class="text-slate-600">You haven't saved any resumes yet.</p>
+    <a href="{% url 'builder' %}" class="mt-4 inline-block rounded-2xl bg-slate-900 text-white px-4 py-2 text-sm font-bold hover:bg-slate-800">Build your first resume</a>
+  </div>
+  {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<style>
+  @page { size: letter; margin: 0.6in 0.7in; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 10.5pt; color: #111; }
+  .name { text-align: center; font-size: 20pt; font-weight: bold; margin-bottom: 2px; }
+  .contact { text-align: center; font-size: 9.5pt; margin-bottom: 4px; }
+  .contact a { color: #111; text-decoration: underline; }
+  hr { border: none; border-top: 0.75pt solid #333; margin: 4px 0 8px 0; }
+  h2.section { font-size: 11pt; font-weight: bold; text-transform: uppercase; margin: 0 0 2px 0; letter-spacing: 0.5px; }
+  table.row { width: 100%; border-collapse: collapse; margin: 0; }
+  table.row td { padding: 0; vertical-align: top; }
+  .left { text-align: left; }
+  .right { text-align: right; }
+  .bold { font-weight: bold; }
+  .italic { font-style: italic; }
+  .entry { margin-bottom: 8px; }
+  ul.bullets { margin: 2px 0 0 0; padding-left: 16px; }
+  ul.bullets li { margin-bottom: 2px; line-height: 1.35; }
+  .coursework { margin: 1px 0 0 0; }
+</style>
+</head>
+<body>
+
+  <div class="name">{{ r.full_name }}</div>
+  <div class="contact">
+    {% if r.city or r.state %}{{ r.city }}{% if r.city and r.state %}, {% endif %}{{ r.state }}{% endif %}
+    {% if r.phone %} | {{ r.phone }}{% endif %}
+    {% if r.linkedin_url %} | <a href="{{ r.linkedin_url }}">LinkedIn</a>{% endif %}
+    {% if r.email %} | <a href="mailto:{{ r.email }}">Gmail</a>{% endif %}
+    {% if r.github_url %} | <a href="{{ r.github_url }}">GitHub</a>{% endif %}
+  </div>
+
+  {% if r.education %}
+  <h2 class="section">Education</h2>
+  <hr />
+  {% for e in r.education %}
+  <div class="entry">
+    <table class="row"><tr>
+      <td class="left bold">{{ e.school }}{% if e.location %}, {{ e.location }}{% endif %}</td>
+      <td class="right">{{ e.dates }}</td>
+    </tr></table>
+    {% if e.degree %}<div>{{ e.degree }}</div>{% endif %}
+    {% if e.coursework %}<div class="coursework"><span class="italic">Relevant coursework:</span> {{ e.coursework }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if r.work %}
+  <h2 class="section">Work Experience</h2>
+  <hr />
+  {% for w in r.work %}
+  <div class="entry">
+    <table class="row"><tr>
+      <td class="left bold">{{ w.role }}</td>
+      <td class="right">{{ w.location }}</td>
+    </tr></table>
+    <table class="row"><tr>
+      <td class="left italic">{{ w.company }}</td>
+      <td class="right">{{ w.dates }}</td>
+    </tr></table>
+    {% if w.bullets %}
+    <ul class="bullets">
+      {% for b in w.bullets %}<li>{{ b }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if r.projects %}
+  <h2 class="section">Personal Projects</h2>
+  <hr />
+  {% for p in r.projects %}
+  <div class="entry">
+    <div class="bold">{{ p.title }}</div>
+    {% if p.bullets %}
+    <ul class="bullets">
+      {% for b in p.bullets %}<li>{{ b }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if r.extracurricular %}
+  <h2 class="section">Extracurricular Activities</h2>
+  <hr />
+  {% for x in r.extracurricular %}
+  <div class="entry">
+    <table class="row"><tr>
+      <td class="left bold">{{ x.role }}</td>
+      <td class="right">{{ x.dates }}</td>
+    </tr></table>
+    {% if x.organization %}<div class="italic">{{ x.organization }}</div>{% endif %}
+    {% if x.bullets %}
+    <ul class="bullets">
+      {% for b in x.bullets %}<li>{{ b }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if r.skills_technical or r.skills_soft %}
+  <h2 class="section">Skills</h2>
+  <hr />
+  {% if r.skills_technical %}<div><span class="bold">Programming Languages:</span> {{ r.skills_technical }}</div>{% endif %}
+  {% if r.skills_soft %}<div><span class="bold">Soft Skills:</span> {{ r.skills_soft }}</div>{% endif %}
+  {% endif %}
+
+</body>
+</html>

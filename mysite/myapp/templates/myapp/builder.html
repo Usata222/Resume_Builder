@@ -1,0 +1,208 @@
+{% extends "myapp/base.html" %}
+{% block title %}Build your resume{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-3xl px-4 sm:px-6 py-10 pb-24">
+  <div class="mb-6">
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+      {% if resume %}Edit Resume{% else %}Build Your Resume{% endif %}
+    </h1>
+    <p class="mt-1 text-sm text-slate-600">
+      {% if user.is_authenticated %}
+        This will be saved to your account when you submit.
+      {% else %}
+        You can build and download this right now without an account.
+        <a href="{% url 'signup' %}" class="underline font-semibold">Sign up</a> if you want it saved so you can come back and edit it later.
+      {% endif %}
+    </p>
+  </div>
+
+  <form method="POST" action="{% if resume %}{% url 'submit_resume_edit' resume.id %}{% else %}{% url 'submit_resume' %}{% endif %}" class="space-y-8">
+    {% csrf_token %}
+
+    <!-- Contact -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <h2 class="font-bold text-slate-900">Contact Info</h2>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Full name</label>
+          <input type="text" name="full_name" required value="{{ resume.full_name|default:'' }}" placeholder="e.g. Jordan Blake">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">City</label>
+          <input type="text" name="city" value="{{ resume.city|default:'' }}" placeholder="e.g. Lagos">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">State</label>
+          <input type="text" name="state" value="{{ resume.state|default:'' }}" placeholder="e.g. Lagos State">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Phone</label>
+          <input type="tel" name="phone" value="{{ resume.phone|default:'' }}" placeholder="e.g. +234 801 234 5678">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Email (Gmail)</label>
+          <input type="email" name="email" value="{{ resume.email|default:'' }}" placeholder="you@gmail.com">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">LinkedIn URL</label>
+          <input type="url" name="linkedin_url" value="{{ resume.linkedin_url|default:'' }}" placeholder="https://linkedin.com/in/you">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">GitHub URL</label>
+          <input type="url" name="github_url" value="{{ resume.github_url|default:'' }}" placeholder="https://github.com/you">
+        </div>
+      </div>
+      <p class="text-xs text-slate-500">These show up as clickable "LinkedIn", "Gmail" and "GitHub" links at the top of your resume — just like on a standard resume.</p>
+    </section>
+
+    <!-- Education -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-900">Education</h2>
+        <button type="button" onclick="addBlock('education')" class="text-sm font-semibold rounded-xl bg-slate-100 px-3 py-1.5 hover:bg-slate-200">+ Add</button>
+      </div>
+      <div id="education-list" class="space-y-4"></div>
+    </section>
+
+    <!-- Work Experience -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-900">Work Experience</h2>
+        <button type="button" onclick="addBlock('work')" class="text-sm font-semibold rounded-xl bg-slate-100 px-3 py-1.5 hover:bg-slate-200">+ Add</button>
+      </div>
+      <div id="work-list" class="space-y-4"></div>
+    </section>
+
+    <!-- Projects -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-900">Personal Projects</h2>
+        <button type="button" onclick="addBlock('proj')" class="text-sm font-semibold rounded-xl bg-slate-100 px-3 py-1.5 hover:bg-slate-200">+ Add</button>
+      </div>
+      <div id="proj-list" class="space-y-4"></div>
+    </section>
+
+    <!-- Extracurricular -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-slate-900">Extracurricular Activities</h2>
+        <button type="button" onclick="addBlock('extra')" class="text-sm font-semibold rounded-xl bg-slate-100 px-3 py-1.5 hover:bg-slate-200">+ Add</button>
+      </div>
+      <div id="extra-list" class="space-y-4"></div>
+    </section>
+
+    <!-- Skills -->
+    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+      <h2 class="font-bold text-slate-900">Skills</h2>
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Programming Languages / Technical Skills</label>
+        <input type="text" name="skills_technical" value="{{ resume.skills_technical|default:'' }}" placeholder="e.g. Python, SQL, JavaScript, C++">
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-slate-700">Soft Skills</label>
+        <input type="text" name="skills_soft" value="{{ resume.skills_soft|default:'' }}" placeholder="e.g. Team Collaboration, Leadership, Public Speaking">
+      </div>
+    </section>
+
+    <button type="submit" class="w-full rounded-2xl bg-slate-900 px-4 py-4 text-sm font-extrabold text-white hover:bg-slate-800">
+      {% if user.is_authenticated %}Save Resume{% else %}Build &amp; Download PDF{% endif %}
+    </button>
+  </form>
+</main>
+
+<template id="tpl-education">
+  <div class="block-item rounded-2xl border border-slate-200 p-4 space-y-3 relative">
+    <button type="button" onclick="this.closest('.block-item').remove()" class="absolute top-3 right-3 text-xs font-semibold text-red-500 hover:text-red-700">Remove</button>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <div class="sm:col-span-2"><label class="text-xs font-semibold text-slate-600">School / University</label><input type="text" name="edu_school" placeholder="e.g. University of Lagos"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Degree</label><input type="text" name="edu_degree" placeholder="e.g. B.Sc. Business Administration"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Location</label><input type="text" name="edu_location" placeholder="e.g. Lagos State"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Dates</label><input type="text" name="edu_dates" placeholder="e.g. 2019 – 2023"></div>
+      <div class="sm:col-span-2"><label class="text-xs font-semibold text-slate-600">Relevant coursework</label><input type="text" name="edu_coursework" placeholder="e.g. Financial Analysis, Statistics, Project Management"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-work">
+  <div class="block-item rounded-2xl border border-slate-200 p-4 space-y-3 relative">
+    <button type="button" onclick="this.closest('.block-item').remove()" class="absolute top-3 right-3 text-xs font-semibold text-red-500 hover:text-red-700">Remove</button>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <div><label class="text-xs font-semibold text-slate-600">Job Title / Role</label><input type="text" name="work_role" placeholder="e.g. Marketing and Operations Intern"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Location</label><input type="text" name="work_location" placeholder="e.g. Lagos, Nigeria"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Company</label><input type="text" name="work_company" placeholder="e.g. Brightline Retail Group"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Dates</label><input type="text" name="work_dates" placeholder="e.g. Jun 2023 – Aug 2023"></div>
+    </div>
+    <div>
+      <label class="text-xs font-semibold text-slate-600">What did you do? One bullet per line.</label>
+      <p class="text-xs text-slate-500 mb-1">Tip — use the XYZ format: "Accomplished [X], as measured by [Y], by doing [Z]." One bullet per achievement, not a paragraph.</p>
+      <textarea name="work_bullets" rows="4" placeholder="Streamlined the weekly inventory reporting process by building a shared spreadsheet template, cutting reporting time from 3 hours to 45 minutes
+Coordinated a customer feedback survey across 5 store locations, identifying gaps that led to a 15% increase in repeat visits
+Trained 4 new team members on point-of-sale procedures, reducing onboarding time by half"></textarea>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-proj">
+  <div class="block-item rounded-2xl border border-slate-200 p-4 space-y-3 relative">
+    <button type="button" onclick="this.closest('.block-item').remove()" class="absolute top-3 right-3 text-xs font-semibold text-red-500 hover:text-red-700">Remove</button>
+    <div><label class="text-xs font-semibold text-slate-600">Project title</label><input type="text" name="proj_title" placeholder="e.g. Personal Budget Tracker"></div>
+    <div>
+      <label class="text-xs font-semibold text-slate-600">What did you build? One bullet per line.</label>
+      <p class="text-xs text-slate-500 mb-1">XYZ format: what you accomplished, the measurable result, and how you did it.</p>
+      <textarea name="proj_bullets" rows="4" placeholder="Designed and built a budgeting web app that helps users track expenses and savings goals, reaching 50+ active users within the first month
+Reduced average time users spent logging expenses by 60% by adding quick-entry templates and recurring transaction detection"></textarea>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-extra">
+  <div class="block-item rounded-2xl border border-slate-200 p-4 space-y-3 relative">
+    <button type="button" onclick="this.closest('.block-item').remove()" class="absolute top-3 right-3 text-xs font-semibold text-red-500 hover:text-red-700">Remove</button>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <div><label class="text-xs font-semibold text-slate-600">Role</label><input type="text" name="extra_role" placeholder="e.g. Volunteer Coordinator"></div>
+      <div><label class="text-xs font-semibold text-slate-600">Dates</label><input type="text" name="extra_dates" placeholder="e.g. Jan 2022 – Present"></div>
+      <div class="sm:col-span-2"><label class="text-xs font-semibold text-slate-600">Organization</label><input type="text" name="extra_org" placeholder="e.g. Red Cross"></div>
+    </div>
+    <div>
+      <label class="text-xs font-semibold text-slate-600">What did you do? One bullet per line.</label>
+      <textarea name="extra_bullets" rows="3" placeholder="Organized a neighborhood cleanup event that brought together 30 volunteers and removed over 500 lbs of waste from local parks
+Coordinated logistics for monthly donation drives, increasing donation volume by 25% year-over-year"></textarea>
+    </div>
+  </div>
+</template>
+
+<script>
+  function addBlock(key) {
+    const tpl = document.getElementById('tpl-' + key);
+    const list = document.getElementById(key + '-list');
+    list.appendChild(tpl.content.cloneNode(true));
+  }
+</script>
+
+{% if resume %}
+<script>
+  (function() {
+    const education = {{ education_json|safe }};
+    const work = {{ work_json|safe }};
+    const projects = {{ projects_json|safe }};
+    const extra = {{ extra_json|safe }};
+
+    function fill(key, items, fieldMap) {
+      items.forEach(item => {
+        addBlock(key);
+        const block = document.querySelectorAll('#' + key + '-list .block-item');
+        const el = block[block.length - 1];
+        Object.keys(fieldMap).forEach(name => {
+          const input = el.querySelector('[name="' + name + '"]');
+          if (input) input.value = item[fieldMap[name]] || '';
+        });
+      });
+    }
+    fill('education', education, {edu_school:'school', edu_degree:'degree', edu_location:'location', edu_dates:'dates', edu_coursework:'coursework'});
+    fill('work', work, {work_role:'role', work_company:'company', work_location:'location', work_dates:'dates', work_bullets:'bullets_text'});
+    fill('proj', projects, {proj_title:'title', proj_bullets:'bullets_text'});
+    fill('extra', extra, {extra_role:'role', extra_org:'organization', extra_dates:'dates', extra_bullets:'bullets_text'});
+  })();
+</script>
+{% endif %}
+{% endblock %}

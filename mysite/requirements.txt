@@ -1,0 +1,4 @@
+Django>=5.0,<6.1
+xhtml2pdf>=0.2.17
+python-dotenv>=1.0.0
+

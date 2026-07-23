@@ -1,0 +1,23 @@
+{% extends "myapp/base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<main class="mx-auto max-w-md px-4 sm:px-6 py-14">
+  <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Create an account</h1>
+  <p class="text-sm text-slate-600 mb-6">Optional — but this is what lets your resumes get saved so you can come back and edit them.</p>
+  <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <form method="POST" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="mt-1 text-xs text-red-600">{{ field.errors|striptags }}</p>{% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-extrabold text-white hover:bg-slate-800">Sign up</button>
+    </form>
+    <p class="mt-4 text-sm text-slate-600">Already have an account? <a href="{% url 'login' %}" class="font-semibold text-slate-900 underline">Sign in</a></p>
+  </section>
+</main>
+{% endblock %}

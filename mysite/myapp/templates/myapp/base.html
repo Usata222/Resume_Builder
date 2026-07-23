@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Resume Builder{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html,body{font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+    input[type=text], input[type=email], input[type=url], input[type=tel], input[type=password], textarea {
+      width: 100%; border-radius: 1rem; border: 1px solid #e2e8f0; background: white;
+      padding: 0.65rem 1rem; font-size: 0.875rem; outline: none;
+    }
+    input:focus, textarea:focus { box-shadow: 0 0 0 4px rgba(99,102,241,.15); border-color:#a5b4fc; }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <nav class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto max-w-5xl px-3 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <a href="{% url 'builder' %}" class="font-extrabold tracking-tight text-slate-900 text-sm sm:text-base shrink-0">Resume Builder</a>
+      <div class="flex items-center flex-wrap gap-1.5 sm:gap-2">
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 px-2 sm:px-3 py-1.5 whitespace-nowrap">My Resumes</a>
+          <a href="{% url 'builder' %}" class="text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 px-2 sm:px-3 py-1.5 whitespace-nowrap">New Resume</a>
+          <span class="text-xs text-slate-400 hidden md:inline">{{ user.username }}</span>
+          <form method="POST" action="{% url 'logout' %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 px-2 sm:px-3 py-1.5 text-slate-700 hover:bg-slate-200 whitespace-nowrap">Log out</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 px-2 sm:px-3 py-1.5 whitespace-nowrap">Sign in</a>
+          <a href="{% url 'signup' %}" class="text-xs sm:text-sm font-semibold rounded-xl bg-slate-900 text-white px-2.5 sm:px-3 py-1.5 whitespace-nowrap hover:bg-slate-800">
+            <span class="sm:hidden">Sign up</span>
+            <span class="hidden sm:inline">Sign up — save your resumes</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  {% if messages %}
+  <div class="mx-auto max-w-5xl px-3 sm:px-6 mt-4">
+    {% for message in messages %}
+      <div class="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-2 mb-2">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>
