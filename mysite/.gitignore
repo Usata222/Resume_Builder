@@ -13,11 +13,11 @@ venv/
 .venv/
 ENV/
 
-# Django
-db.sqlite3
-db.sqlite3-journal
-/staticfiles/
-/media/
+# # Django
+# db.sqlite3
+# db.sqlite3-journal
+# /staticfiles/
+# /media/
 
 # Editors / OS
 .vscode/
