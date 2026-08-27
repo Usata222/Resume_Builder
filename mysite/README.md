@@ -2,16 +2,15 @@
 
 Build a professional, ATS-friendly resume in your browser and export it straight to PDF — no account required to use it, but sign up if you want your resumes saved.
 
-## Demo
+## 📸 Demo / Screenshots
 
-<!-- Add a link to your live demo here, e.g.: -->
-<!-- 🔗 Live demo: [https://purple-space.onrender.com]-->
+**Live demo:** https://resume-builder-w6b8.onrender.com/
 
-<!-- Add a screenshot or short screen recording here, e.g.: -->
-<!-- ![Resume Builder screenshot](./screenshots/builder.png) -->
-<!-- ![Sample PDF output](./screenshots/sample-resume.png) -->
+<!-- Add screenshots to a `screenshots/` folder in your repo and reference them like this: -->
+![Login page](screenshots/login.png)
+![[Resume Builder screenshot](screenshots/rooms.png)
+![Sample PDF output](screenshots/chatroom.png)
 
-> Drop your screenshots/GIFs in a `screenshots/` folder in the project root and update the paths above once you have them.
 
 ## Features
 
