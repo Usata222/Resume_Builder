@@ -8,7 +8,7 @@ Build a professional, ATS-friendly resume in your browser and export it straight
 
 <!-- Add screenshots to a `screenshots/` folder in your repo and reference them like this: -->
 ![Login page](screenshots/login.png)
-![[Resume Builder screenshot](screenshots/rooms.png)
+![Resume Builder screenshot](screenshots/rooms.png)
 ![Sample PDF output](screenshots/chatroom.png)
 
 
